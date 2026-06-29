@@ -89,7 +89,7 @@
 (global-set-key (kbd "M-h") 'ns-do-hide-emacs)
 
 ;; redo+
-(require 'redo+)
+;; (require 'redo+)
 
 ;; dirtree
 (require 'dirtree)
@@ -232,9 +232,14 @@
 (setq neo-smart-open t)
 (evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter)
 
+;;powerline
 (require 'powerline)
 (require 'powerline-evil)
 (powerline-evil-vim-color-theme)
+
+;;telephone-line (substitute powerline)
+(require 'telephone-line)
+(telephone-line-mode 1)
 
 ;; evil-nerd-commenter
 (evilnc-default-hotkeys)
@@ -280,6 +285,19 @@
   "x" 'smex
   "."  'evil-ex
   )
+
+;; evil Redo con C-r (substituye a redo+)
+(use-package undo-tree
+  :ensure t
+  :init
+  (global-undo-tree-mode 1))
+
+(use-package evil
+  :ensure t
+  :init
+  (setq evil-undo-system 'undo-tree))
+
+(evil-set-undo-system 'undo-redo)
 
 ;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
 (require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
