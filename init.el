@@ -222,7 +222,7 @@
 (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
 ;; (key-chord-define evil-normal-state-map "ZZ" 'evil-save-and-close)
 
-(define-key evil-normal-state-map (kbd "U") 'redo) ;U is also redo in evil-mode
+(define-key evil-normal-state-map (kbd "U") 'evil-redo) ;U is also redo in evil-mode
 
 ;;; evil <esc> quits
 (define-key evil-normal-state-map [escape] 'keyboard-quit)
@@ -254,6 +254,8 @@
 (define-key evil-visual-state-map (kbd ", w") 'avy-goto-word-0-below)
 (define-key evil-normal-state-map (kbd "s-7") 'evilnc-comment-or-uncomment-lines)
 (define-key evil-visual-state-map (kbd "s-7") 'evilnc-comment-or-uncomment-lines)
+(define-key evil-normal-state-map (kbd "C-7") 'evilnc-comment-or-uncomment-lines)
+(define-key evil-visual-state-map (kbd "C-7") 'evilnc-comment-or-uncomment-lines)
 ;; (define-key evil-normal-state-map (kbd ", c") 'evilnc-comment-or-uncomment-lines)
 ;; (define-key evil-visual-state-map (kbd ", c") 'evilnc-comment-or-uncomment-lines)
 (key-chord-define evil-normal-state-map ",." 'evil-ex)
