@@ -272,6 +272,7 @@
 (define-key evil-visual-state-map (kbd "g l") 'evil-end-of-line)
 (define-key evil-normal-state-map (kbd "g e") 'end-of-buffer)
 (define-key evil-visual-state-map (kbd "g e") 'end-of-buffer)
+(define-key evil-normal-state-map (kbd ", r") 'eval-buffer)
 
 ;; evil-space: Repeat search with <SPC> and <S-SPC>
 ;; (require 'evil-space)
@@ -280,13 +281,6 @@
 (use-package avy ;easymotion
   :init
   (key-chord-define evil-normal-state-map "gw" 'avy-goto-word-0-below))
-
-;; (use-package general)
-;; (general-evil-setup)
-;; (general-nmap
-;;  :prefix "SPC"
-;;  "w": 'save-buffer
-;;  "q": 'kill-buffer)
 
 ;; defino funciones para el evil-leader
 ;; para alternar entre relativos y absolutos
@@ -327,7 +321,8 @@
   "w"  'switch-to-buffer
   "s"  'save-buffer
   "q"  'kill-buffer
-  ",q" 'kill-emacs ;q!
+  ;; ",q" 'kill-emacs ;q!
+  "Q" 'kill-emacs ;q!
   ;; "zz" 'save-buffers-kill-emacs
   "max" 'toggle-frame-maximized
   "min" 'toggle-frame-maximized
@@ -338,6 +333,7 @@
   "n" #'my/toggle-relative-line-numbers
   "x" 'smex
   "."  'evil-ex
+  ","  'evil-ex
   )
 
 
