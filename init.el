@@ -1,10 +1,19 @@
 ;; MELPA
 (require 'package)
-(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/"))
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+; (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/"))
+; (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 
-;; para usar el sistema use-package
-(require 'use-package-ensure)
+(setq package-archives
+      '(("gnu"    . "https://elpa.gnu.org/packages/")
+        ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+        ("melpa"  . "https://melpa.org/packages/")))
+
+(package-initialize)
+
+(unless package-archive-contents
+  (package-refresh-contents));; para usar el sistema use-package
+ 
+(require 'use-package)
 (setq use-package-always-ensure t) ;; Si ni existe el paquete lo descarga
 
 ;;MacOsx keyboard config. Comment in Windows / Linux
@@ -124,16 +133,15 @@
   ('css-mode-hook .  'emmet-mode)) ;; enable Emmet's css abbreviation.
 
 
-(use-package smartparens
-  :ensure smartparens
-  :init
-  (setq smartparens-global-mode t)
-  :hook
-  (prog-mode text-mode markdown-mode) ;; add `smartparens-mode` to these hooks
-  ('smartparens-enabled-hook . 'evil-smartparens-mode);; evil-smartparens will be enabled whenever smartparens is enabled
-  :config
-  (require 'smartparens-config))
-
+;; (use-package smartparens
+;;   :ensure smartparens
+;;   :init
+;;   (setq smartparens-global-mode t)
+;;   :hook
+;;   (prog-mode text-mode markdown-mode) ;; add `smartparens-mode` to these hooks
+;;   ('smartparens-enabled-hook . 'evil-smartparens-mode);; evil-smartparens will be enabled whenever smartparens is enabled
+;;   :config
+;;   (require 'smartparens-config))
 
 
 ;;tabuladores... No se si funciona
@@ -191,10 +199,14 @@
 (global-evil-leader-mode)
 (evil-leader/set-leader "<SPC>")
 
+(use-package smartparens
+  :hook ((prog-mode text-mode markdown-mode) . smartparens-mode)
+  :config
+  (require 'smartparens-config))
+
 (use-package evil-smartparens
-  :ensure t
-  :hook
-  ('smartparens-enabled-hook . 'evil-smartparens-mode))
+  :after (evil smartparens)
+  :hook (smartparens-enabled-hook . evil-smartparens-mode))
 
 (use-package evil-surround
   :ensure t
@@ -202,12 +214,15 @@
   (global-evil-surround-mode 1))
 
 (use-package telephone-line
-  :init
+  :ensure t
+  :config
   (telephone-line-mode 1))
 
-;; evil-nerd-commenter
-(evilnc-default-hotkeys)
-
+(use-package evil-nerd-commenter
+  :after evil
+  :config
+  (evilnc-default-hotkeys))
+; 
 ;;extend % use to tags
 (global-evil-matchit-mode 1)
 
@@ -336,6 +351,13 @@
   ","  'evil-ex
   )
 
+
+
+;; (evil-set-undo-system 'undo-redo)
+
+;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
+(require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
+;; ## end of OPAM user-setup addition for emacs / base ## keep this line
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
