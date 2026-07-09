@@ -12,9 +12,10 @@
 
 (unless package-archive-contents
   (package-refresh-contents));; para usar el sistema use-package
- 
+
+
 (require 'use-package)
-(setq use-package-always-ensure t) ;; Si ni existe el paquete lo descarga
+(setq use-package-always-ensure t) ;; Si no existe el paquete lo descarga
 
 ;;MacOsx keyboard config. Comment in Windows / Linux
 (setq default-input-method "MacOSX")
@@ -35,7 +36,6 @@
 
 ;; Tema
 ;;;;;;;;;;;;;;;
-(load-theme 'tango-dark)
 (load-theme 'monokai t) ;;t for avoid confirmation
 
 (custom-set-faces
@@ -57,7 +57,7 @@
 
 ;; For auto-completion
 (setq shift-select-mode t)
-(add-hook 'after-init-hook 'global-company-mode)
+; (add-hook 'after-init-hook 'global-company-mode)
 
 ;; markdown-mode
 ;;;;;;;;;;;;;;;;
@@ -71,10 +71,6 @@
 ;;Markdown-mode comillas
 (add-hook 'markdown-mode-hook (lambda () (modify-syntax-entry ?\" "\"" markdown-mode-syntax-table)))
 
-;;pandoc-mode
-;;;;;;;;;;;;;;
-(add-hook 'markdown-mode-hook 'pandoc-mode)
-
 ;; Keybinds
 ;;;;;;;;;;;
 (global-set-key (kbd "C-<SPC>") 'set-mark-command) ; Ctrl-SPC Set Mark
@@ -87,13 +83,6 @@
 ;; Set super-h and Alt-h to hide window
 (global-set-key (kbd "S-h") 'ns-do-hide-emacs)
 (global-set-key (kbd "M-h") 'ns-do-hide-emacs)
-;; (global-set-key (kbd "C-k") 'kill-whole-line) ;jj Ctrl-K Kill
-;; (global-set-key (kbd "C-<tab>") 'other-window) ; Ctrl-TAB Next Window Buffer
-;; (define-key isearch-mode-map (kbd "<right>") 'isearch-repeat-forward) ; -> Search Forward
-;; (define-key isearch-mode-map (kbd "<left>") 'isearch-repeat-backward) ; <- Search Backward
-;; (global-set-key (kbd "C-'") 'comment-dwim) ; Ctrl-ç Comment
-
-
 
 ;;Packages
 ;;;;;;;;;;
@@ -108,7 +97,7 @@
 (use-package clojure-mode)
 
 (use-package rainbow-delimiters
-  :hook ('prog-mode-hook . 'rainbow-delimiters-mode))
+  :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package yasnippet
   :init
@@ -128,58 +117,46 @@
 (use-package emmet-mode
   :init
   (setq emmet-move-cursor-between-quotes t)
-  :hook
-  ('sgml-mode-hook . 'emmet-mode) ;; Auto-start on any markup modes
-  ('css-mode-hook .  'emmet-mode)) ;; enable Emmet's css abbreviation.
-
-
-;; (use-package smartparens
-;;   :ensure smartparens
-;;   :init
-;;   (setq smartparens-global-mode t)
-;;   :hook
-;;   (prog-mode text-mode markdown-mode) ;; add `smartparens-mode` to these hooks
-;;   ('smartparens-enabled-hook . 'evil-smartparens-mode);; evil-smartparens will be enabled whenever smartparens is enabled
-;;   :config
-;;   (require 'smartparens-config))
-
+  :hook ((sgml-mode . emmet-mode)
+         (css-mode . emmet-mode)))
 
 ;;tabuladores... No se si funciona
 (setq-default indent-tabs-mode nil)
 (setq tab-stop-list (number-sequence 5 120 5))
 
-;;auctex
-;;;;;;;;
-(load "auctex.el" nil t t)
-(setq TeX-PDF-mode t)
+(use-package company
+  :hook (after-init . global-company-mode))
 
+(use-package smex
+  :config
+  (smex-initialize))
 
-;; (custom-set-variables
-;;  ;; custom-set-variables was added by Custom.
-;;  ;; If you edit it by hand, you could mess it up, so be careful.
-;;  ;; Your init file should contain only one such instance.
-;;  ;; If there is more than one, they won't work right.
-;;  '(cua-enable-cua-keys nil)
-;;  '(cua-mode t nil (cua-base))
-;;  '(custom-safe-themes
-;;    '("f78de13274781fbb6b01afd43327a4535438ebaeec91d93ebdbba1e3fba34d3c"
-;;      default))
-;;  '(delete-selection-mode t)
-;;  '(evil-space-mode t)
-;;  '(org-CUA-compatible nil)
-;;  '(org-replace-disputed-keys t)
-;;  '(package-selected-packages nil)
-;;  '(recentf-mode t)
-;;  '(shift-select-mode nil)
-;;  '(show-paren-mode t))
+(use-package markdown-mode)
 
+(use-package pandoc-mode
+  :hook (markdown-mode . pandoc-mode))
+
+;; LaTeX / AUCTeX
+(use-package auctex
+  :defer t
+  :mode ("\\.tex\\'" . LaTeX-mode)
+  :hook ((LaTeX-mode . visual-line-mode)
+         (LaTeX-mode . flyspell-mode)
+         (LaTeX-mode . LaTeX-math-mode)
+         (LaTeX-mode . turn-on-reftex))
+  :custom
+  (TeX-auto-save t)
+  (TeX-parse-self t)
+  (TeX-PDF-mode t)
+  (reftex-plug-into-AUCTeX t)
+  :config
+  (setq TeX-view-program-selection
+        '((output-pdf "open"))))
 
 ;;;;;;;;;;;;;;;;;;;;
 
-
-;; EVIL ;;
-;;;;;;;;;;
-;; (setq evil-want-C-u-scroll t)
+;; EVIL 
+;;;;;;;
 
 (use-package evil
   :ensure t
@@ -219,13 +196,18 @@
   (telephone-line-mode 1))
 
 (use-package evil-nerd-commenter
+  :ensure t
   :after evil
+  :commands (evilnc-comment-or-uncomment-lines evilnc-default-hotkeys)
   :config
-  (evilnc-default-hotkeys))
+  ;; (evilnc-default-hotkeys)
+  )
 ; 
 ;;extend % use to tags
-(global-evil-matchit-mode 1)
-
+(use-package evil-matchit
+  :after evil
+  :config
+  (global-evil-matchit-mode 1))
 
 (use-package key-chord
   :init
@@ -235,7 +217,6 @@
 
 (key-chord-define evil-insert-state-map "jj" 'evil-normal-state)
 (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
-;; (key-chord-define evil-normal-state-map "ZZ" 'evil-save-and-close)
 
 (define-key evil-normal-state-map (kbd "U") 'evil-redo) ;U is also redo in evil-mode
 
@@ -248,18 +229,6 @@
 (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
 (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
 
-;; ,. -> <esc>
-;; (key-chord-define evil-normal-state-map ",," 'evil-force-normal-state)
-;; (key-chord-define evil-visual-state-map ",." 'evil-change-to-previous-state)
-;; (key-chord-define evil-insert-state-map ",." 'evil-normal-state)
-;; (key-chord-define evil-replace-state-map ",." 'evil-normal-state)
-;; (key-chord-define evil-visual-state-map ",." 'keyboard-quit)
-;; (key-chord-define minibuffer-local-map ",." 'minibuffer-keyboard-quit)
-;; (key-chord-define minibuffer-local-ns-map ",." 'minibuffer-keyboard-quit)
-;; (key-chord-define minibuffer-local-completion-map ",." 'minibuffer-keyboard-quit)
-;; (key-chord-define minibuffer-local-must-match-map ",." 'minibuffer-keyboard-quit)
-;; (key-chord-define minibuffer-local-isearch-map ",." 'minibuffer-keyboard-quit)
-
 ;; Keybinds
 (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up) ; Para que Ctrl-U sea scroll up en evil mode
 (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
@@ -271,8 +240,8 @@
 (define-key evil-visual-state-map (kbd "s-7") 'evilnc-comment-or-uncomment-lines)
 (define-key evil-normal-state-map (kbd "C-7") 'evilnc-comment-or-uncomment-lines)
 (define-key evil-visual-state-map (kbd "C-7") 'evilnc-comment-or-uncomment-lines)
-;; (define-key evil-normal-state-map (kbd ", c") 'evilnc-comment-or-uncomment-lines)
-;; (define-key evil-visual-state-map (kbd ", c") 'evilnc-comment-or-uncomment-lines)
+(define-key evil-normal-state-map (kbd ", c") 'evilnc-comment-or-uncomment-lines)
+(define-key evil-visual-state-map (kbd ", c") 'evilnc-comment-or-uncomment-lines)
 (key-chord-define evil-normal-state-map ",." 'evil-ex)
 (key-chord-define evil-visual-state-map ",." 'evil-ex)
 
@@ -288,10 +257,6 @@
 (define-key evil-normal-state-map (kbd "g e") 'end-of-buffer)
 (define-key evil-visual-state-map (kbd "g e") 'end-of-buffer)
 (define-key evil-normal-state-map (kbd ", r") 'eval-buffer)
-
-;; evil-space: Repeat search with <SPC> and <S-SPC>
-;; (require 'evil-space)
-;; (evil-space-mode)
 
 (use-package avy ;easymotion
   :init
@@ -315,17 +280,6 @@
 
 ;; set custom evil-leader keybinds
 (evil-leader/set-key
-  ;; ",f" 'avy-goto-char
-  ;; ",F" 'avy-goto-char
-  ;; ",t" 'avy-goto-char
-  ;; ",T" 'avy-goto-char
-  ;; ",w" 'avy-goto-word-0-below
-  ;; "<spc>w" 'avy-goto-word-0-below
-  ;; ",b" 'avy-goto-word-0-above
-  ;; ",j" 'avy-goto-line-below
-  ;; ",k" 'avy-goto-line-above
-  ;; "s"  'evil-search-forward
-  ;; "S"  'evil-search-backward
   "c" 'evilnc-comment-or-uncomment-lines
   "r" 'eval-buffer
   "f"  'ido-find-file
@@ -338,13 +292,11 @@
   "q"  'kill-buffer
   ;; ",q" 'kill-emacs ;q!
   "Q" 'kill-emacs ;q!
-  ;; "zz" 'save-buffers-kill-emacs
   "max" 'toggle-frame-maximized
   "min" 'toggle-frame-maximized
   "mf" 'toggle-frame-fullscreen
   "v" #'my/toggle-word-wrap ;;'toggle-word-wrap
   "z" #'my/toggle-word-wrap ;;'toggle-word-wrap
-  ;; "n" '(lambda ()(interactive) (linum-mode) (linum-relative-toggle))
   "n" #'my/toggle-relative-line-numbers
   "x" 'smex
   "."  'evil-ex
@@ -353,23 +305,16 @@
 
 
 
-;; (evil-set-undo-system 'undo-redo)
-
-;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
-(require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
-;; ## end of OPAM user-setup addition for emacs / base ## keep this line
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(auctex cider coffee-mode company dirtree emmet-mode evil-avy
-            evil-easymotion evil-leader evil-matchit
-            evil-nerd-commenter evil-smartparens evil-space
-            evil-surround general haml-mode haskell-mode
-            ido-vertical-mode key-chord linum-relative lorem-ipsum
-            markdown-mode+ monokai-theme neotree pandoc-mode
-           powerline-evil projectile rainbow-delimiters redo+ smex
+   '(auctex avy clojure-mode company dirtree emmet-mode evil-leader
+            evil-matchit evil-nerd-commenter evil-smartparens
+            evil-space evil-surround ido-vertical-mode key-chord
+            lorem-ipsum markdown-mode monokai-theme neotree
+            pandoc-mode powerline rainbow-delimiters smex
             telephone-line undo-tree yasnippet)))
 (if (window-system) (set-frame-size (selected-frame) 140 80)) ; resize a 140 col y 80 filas
