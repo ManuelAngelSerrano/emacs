@@ -153,6 +153,11 @@
   (setq TeX-view-program-selection
         '((output-pdf "open"))))
 
+
+(use-package elm-mode
+  :config
+  (setq elm-mode-hook '(elm-indent-simple-mode)))
+
 ;;;;;;;;;;;;;;;;;;;;
 
 ;; EVIL 
@@ -310,11 +315,5 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(auctex avy clojure-mode company dirtree emmet-mode evil-leader
-            evil-matchit evil-nerd-commenter evil-smartparens
-            evil-space evil-surround ido-vertical-mode key-chord
-            lorem-ipsum markdown-mode monokai-theme neotree
-            pandoc-mode powerline rainbow-delimiters smex
-            telephone-line undo-tree yasnippet)))
+ '(package-selected-packages nil))
 (if (window-system) (set-frame-size (selected-frame) 140 80)) ; resize a 140 col y 80 filas
