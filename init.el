@@ -158,6 +158,31 @@
   :config
   (setq elm-mode-hook '(elm-indent-simple-mode)))
 
+(use-package indent-bars
+  :ensure t
+  ;; :hook ((emacs-lisp-mode
+  ;;         markdown-mode
+  ;;         python-mode
+  ;;         elm-mode
+  ;;         rst-mode
+  ;;         yaml-mode) . indent-bars-mode)
+  :hook
+  ((prog-mode . indent-bars-mode)
+   (markdown-mode . indent-bars-mode)
+   (LaTeX-mode . indent-bars-mode)
+   (rst-mode . indent-bars-mode)
+   (yaml-mode . indent-bars-mode))
+  :config
+  (setq
+    indent-bars-color '(highlight :face-bg t :blend 0.15)
+    indent-bars-pattern "|"
+    indent-bars-width-frac 0.2
+    indent-bars-pad-frac 0.2
+    indent-bars-zigzag nil
+    indent-bars-color-by-depth '(:regexp "outline-\\([0-9]+\\)" :blend 1) ; blend=1: blend with BG only
+    indent-bars-highlight-current-depth '(:blend 0.5) ; pump up the BG blend on current
+    indent-bars-display-on-blank-lines t)
+)
 ;;;;;;;;;;;;;;;;;;;;
 
 ;; EVIL 
